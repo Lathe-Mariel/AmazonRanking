@@ -4,10 +4,13 @@
 ## How to use
 AmazonScrape-1.0.jarをダウンロードしてください．<br>
 Please download AmazonScrape-1.0.jar file<br>
+<br>
 いわゆるFat Jarになっており，ライブラリを含んでいます．<br>
 The file is fat jar, libraries are included.<br>
+<br>
 次の様に実行します．<br>
 The application is executed by following command.<br>
+<br>
 $ java -jar AmazonScrape-1.0
 <br>
 Raspbian OS, Windows10で動作確認しています．<br>
