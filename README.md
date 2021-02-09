@@ -1,5 +1,7 @@
-# AmazonRanking
-　Interface誌の販売ランキング（Amazon調べ）を表示します．
+# インターフェース誌 AmazonRanking
+　Interface誌の販売ランキング（Amazon調べ）を表示します．<br>
+ Java + Swingを使用しています(JDK15)．<br>
+ ウェブ・スクレイピングにはjsoupを使っています．<Br>
  
 ## How to use
 AmazonScrape-1.0.jarをダウンロードしてください．<br>
