@@ -11,7 +11,7 @@ The file is fat jar, libraries are included.<br>
 次の様に実行します．<br>
 The application is executed by following command.<br>
 <br>
-$ java -jar AmazonScrape-1.0
+`$ java -jar AmazonScrape-1.0`<br>
 <br>
 Raspbian OS, Windows10で動作確認しています．<br>
 We can use the application on Raspbian, Windows 10.<br>
