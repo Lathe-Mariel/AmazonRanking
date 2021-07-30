@@ -17,3 +17,6 @@ The application is executed by following command.<br>
 <br>
 Raspbian OS, Windows10で動作確認しています．<br>
 We can use the application on Raspbian, Windows 10.<br>
+
+ ## App throws Ranking data to IBM Cloud(cloudant)
+ If you use this function, you need to get EndPoint and IAM key to connect IBM cloud.
