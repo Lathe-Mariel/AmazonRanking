@@ -5,14 +5,35 @@
  */
 package com.mycompany.amazonscrape;
 
+import com.cloudant.client.api.ClientBuilder;
+import com.cloudant.client.api.CloudantClient;
+import com.cloudant.client.api.Database;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.swing.ImageIcon;
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,12 +50,6 @@ public class InterScrape extends javax.swing.JFrame {
      */
     public InterScrape() {
         initComponents();
-        myinit();
-    }
-    
-    private void myinit(){
-        jComboBox1.setSelectedIndex(1);
-        jLabel7.setText(jComboBox1.getSelectedItem().toString());
     }
 
     /**
@@ -47,93 +62,92 @@ public class InterScrape extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
+        jTabbedPane = new javax.swing.JTabbedPane();
+        mainPanel = new javax.swing.JPanel();
+        upperRankLabel = new javax.swing.JLabel();
+        manualButton = new javax.swing.JButton();
+        titleLabel = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jLabel12 = new javax.swing.JLabel();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        logScrollPane = new javax.swing.JScrollPane();
+        magazineCoverLabel = new javax.swing.JLabel();
+        lowerRankButton = new javax.swing.JButton();
         jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+        lowerRankLabel = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        upperRankLabel1 = new javax.swing.JLabel();
+        upperRankButton = new javax.swing.JButton();
+        bookPreferencePanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jPanel3 = new javax.swing.JPanel();
-        jTextField2 = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jSeparator1 = new javax.swing.JSeparator();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        logTextArea = new javax.swing.JTextArea();
+        allDataButton = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jPanel4 = new javax.swing.JPanel();
-        jSlider1 = new javax.swing.JSlider();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
+        settingPanel = new javax.swing.JPanel();
+        setElementsTextField = new javax.swing.JTextField();
+        setElementsLabel = new javax.swing.JLabel();
+        setTitlesTextField = new javax.swing.JTextField();
+        setTitleLabel = new javax.swing.JLabel();
+        scrapePropertySetLabel = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        IBM_ep = new javax.swing.JTextField();
+        IBM_iam = new javax.swing.JTextField();
+        jButton3 = new javax.swing.JButton();
+        timerPanel = new javax.swing.JPanel();
+        intervalTimeSlider = new javax.swing.JSlider();
+        intervalLabel = new javax.swing.JLabel();
+        intervalTimeLabel = new javax.swing.JLabel();
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField1 = new javax.swing.JTextField();
-        jToolBar1 = new javax.swing.JToolBar();
-        jButton3 = new javax.swing.JButton();
+        timerAutoLabel = new javax.swing.JLabel();
+        addressLabel = new javax.swing.JLabel();
+        addressTextField = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        messageTextField = new javax.swing.JTextField();
+        upperToolBar = new javax.swing.JToolBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(650, 450));
 
-        jTabbedPane1.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jTabbedPane1.setName(""); // NOI18N
-        jTabbedPane1.setPreferredSize(new java.awt.Dimension(490, 242));
+        jTabbedPane.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
+        jTabbedPane.setName(""); // NOI18N
+        jTabbedPane.setPreferredSize(new java.awt.Dimension(490, 242));
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(455, 208));
+        mainPanel.setPreferredSize(new java.awt.Dimension(455, 208));
 
-        jLabel1.setFont(new java.awt.Font("MS UI Gothic", 0, 36)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        upperRankLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 36)); // NOI18N
+        upperRankLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        upperRankLabel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
-        jButton1.setFont(new java.awt.Font("MS UI Gothic", 0, 24)); // NOI18N
-        jButton1.setText("順位取得");
-        jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        manualButton.setFont(new java.awt.Font("MS UI Gothic", 0, 24)); // NOI18N
+        manualButton.setText("順位取得");
+        manualButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        manualButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                manualButtonActionPerformed(evt);
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("MS UI Gothic", 0, 24)); // NOI18N
-        jLabel2.setText("インターフェースAmazon順位");
+        titleLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 24)); // NOI18N
+        titleLabel.setText("インターフェースAmazon順位");
 
         jLabel7.setFont(new java.awt.Font("MS UI Gothic", 0, 18)); // NOI18N
         jLabel7.setText("コンピュータ・モバイル");
         jLabel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel12.setFont(new java.awt.Font("MS UI Gothic", 0, 24)); // NOI18N
-        jLabel12.setForeground(new java.awt.Color(255, 0, 51));
-        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel12.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
-        jLabel12.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
-        jLabel12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jScrollPane2.setViewportView(jLabel12);
+        magazineCoverLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 24)); // NOI18N
+        magazineCoverLabel.setForeground(new java.awt.Color(255, 0, 51));
+        magazineCoverLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        magazineCoverLabel.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
+        magazineCoverLabel.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
+        magazineCoverLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        logScrollPane.setViewportView(magazineCoverLabel);
 
-        jButton4.setFont(new java.awt.Font("MS UI Gothic", 0, 18)); // NOI18N
-        jButton4.setText("前");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        lowerRankButton.setFont(new java.awt.Font("MS UI Gothic", 0, 18)); // NOI18N
+        lowerRankButton.setText("後");
+        lowerRankButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
-        jButton5.setFont(new java.awt.Font("MS UI Gothic", 0, 18)); // NOI18N
-        jButton5.setText("後");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                lowerRankButtonActionPerformed(evt);
             }
         });
 
@@ -141,183 +155,257 @@ public class InterScrape extends javax.swing.JFrame {
         jLabel13.setText("雑誌");
         jLabel13.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jLabel14.setFont(new java.awt.Font("MS UI Gothic", 0, 36)); // NOI18N
-        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel14.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        lowerRankLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 36)); // NOI18N
+        lowerRankLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lowerRankLabel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+        jLabel8.setFont(new java.awt.Font("MS UI Gothic", 0, 18)); // NOI18N
+        jLabel8.setText("OS・プログラミング");
+        jLabel8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        upperRankLabel1.setFont(new java.awt.Font("MS UI Gothic", 0, 36)); // NOI18N
+        upperRankLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        upperRankLabel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
+        upperRankButton.setFont(new java.awt.Font("MS UI Gothic", 0, 18)); // NOI18N
+        upperRankButton.setText("前");
+        upperRankButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                upperRankButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
+        mainPanel.setLayout(mainPanelLayout);
+        mainPanelLayout.setHorizontalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jLabel2)
+                .addComponent(titleLabel)
                 .addGap(162, 162, 162))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(25, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(33, 33, 33)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButton4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton5)))))
-                .addGap(17, 17, 17))
+            .addGroup(mainPanelLayout.createSequentialGroup()
+                .addContainerGap(7, Short.MAX_VALUE)
+                .addComponent(logScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(47, 47, 47))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(mainPanelLayout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(mainPanelLayout.createSequentialGroup()
+                                        .addComponent(upperRankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(upperRankLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(mainPanelLayout.createSequentialGroup()
+                                        .addComponent(jLabel7)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel8))))
+                            .addGroup(mainPanelLayout.createSequentialGroup()
+                                .addGap(30, 30, 30)
+                                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(mainPanelLayout.createSequentialGroup()
+                                        .addGap(6, 6, 6)
+                                        .addComponent(upperRankButton)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(manualButton)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(lowerRankButton))
+                                    .addComponent(lowerRankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap(17, Short.MAX_VALUE))))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        mainPanelLayout.setVerticalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(15, 15, 15)
+                .addComponent(titleLabel)
+                .addGap(12, 12, 12)
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(upperRankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(upperRankLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
                         .addComponent(jLabel13)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton5)
-                            .addComponent(jButton4)))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(lowerRankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(upperRankButton)
+                            .addComponent(manualButton)
+                            .addComponent(lowerRankButton)))
+                    .addComponent(logScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("メイン", jPanel1);
+        jTabbedPane.addTab("メイン", mainPanel);
 
-        jPanel2.setPreferredSize(new java.awt.Dimension(455, 214));
+        bookPreferencePanel.setPreferredSize(new java.awt.Dimension(455, 214));
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        logTextArea.setColumns(20);
+        logTextArea.setRows(5);
+        jScrollPane1.setViewportView(logTextArea);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 591, Short.MAX_VALUE)
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel2Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 279, Short.MAX_VALUE)
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-        );
+        allDataButton.setText("getAllData()");
+        allDataButton.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        allDataButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        allDataButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        allDataButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                allDataButtonActionPerformed(evt);
+            }
+        });
 
-        jTabbedPane1.addTab("Log", jPanel2);
+        jButton1.setText("sendMail");
+        jButton1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton1.setMargin(new java.awt.Insets(2, 30, 2, 14));
+        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
-        jPanel3.setPreferredSize(new java.awt.Dimension(455, 208));
-
-        jTextField2.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jTextField2.setText("zg-badge-text");
-
-        jLabel3.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jLabel3.setText("順位[elements]");
-
-        jTextField3.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jTextField3.setText("p13n-sc-truncate");
-
-        jLabel4.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jLabel4.setText("雑誌名[titles]");
-
-        jLabel6.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jLabel6.setText("設定");
-        jLabel6.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-
-        jComboBox1.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "雑誌", "コンピュータ・モバイル" }));
-
-        jButton2.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jButton2.setText("設定");
+        jButton2.setText("send IBM");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 414, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4))
-                        .addGap(40, 40, 40)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField3)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2)))
-                .addContainerGap(152, Short.MAX_VALUE))
+        javax.swing.GroupLayout bookPreferencePanelLayout = new javax.swing.GroupLayout(bookPreferencePanel);
+        bookPreferencePanel.setLayout(bookPreferencePanelLayout);
+        bookPreferencePanelLayout.setHorizontalGroup(
+            bookPreferencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(bookPreferencePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(allDataButton)
+                .addGap(43, 43, 43)
+                .addComponent(jButton1)
+                .addGap(37, 37, 37)
+                .addComponent(jButton2)
+                .addContainerGap(312, Short.MAX_VALUE))
+            .addGroup(bookPreferencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(bookPreferencePanelLayout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addGap(18, 18, 18)
-                .addComponent(jLabel6)
-                .addGap(18, 18, 18)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2))
-                .addContainerGap(96, Short.MAX_VALUE))
+        bookPreferencePanelLayout.setVerticalGroup(
+            bookPreferencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bookPreferencePanelLayout.createSequentialGroup()
+                .addContainerGap(246, Short.MAX_VALUE)
+                .addGroup(bookPreferencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton2)
+                    .addComponent(jButton1)
+                    .addComponent(allDataButton))
+                .addContainerGap())
+            .addGroup(bookPreferencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bookPreferencePanelLayout.createSequentialGroup()
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
-        jTabbedPane1.addTab("設定", jPanel3);
+        jTabbedPane.addTab("Log", bookPreferencePanel);
 
-        jSlider1.setMinimum(1);
-        jSlider1.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                jSlider1StateChanged(evt);
+        settingPanel.setPreferredSize(new java.awt.Dimension(455, 208));
+
+        setElementsTextField.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
+        setElementsTextField.setText("zg-badge-text");
+
+        setElementsLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
+        setElementsLabel.setText("順位[elements]");
+
+        setTitlesTextField.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
+        setTitlesTextField.setText("p13n-sc-truncate");
+
+        setTitleLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
+        setTitleLabel.setText("雑誌名[titles]");
+
+        scrapePropertySetLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
+        scrapePropertySetLabel.setText("設定");
+        scrapePropertySetLabel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        IBM_iam.setText("IAM");
+
+        jButton3.setText("設定");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
             }
         });
 
-        jLabel9.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jLabel9.setText("インターバル");
-        jLabel9.setToolTipText("順位を送信する間隔");
+        javax.swing.GroupLayout settingPanelLayout = new javax.swing.GroupLayout(settingPanel);
+        settingPanel.setLayout(settingPanelLayout);
+        settingPanelLayout.setHorizontalGroup(
+            settingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(settingPanelLayout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addGroup(settingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton3)
+                    .addGroup(settingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 414, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(scrapePropertySetLabel)
+                        .addGroup(settingPanelLayout.createSequentialGroup()
+                            .addGroup(settingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(setElementsLabel)
+                                .addComponent(setTitleLabel))
+                            .addGap(40, 40, 40)
+                            .addGroup(settingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(setTitlesTextField)
+                                .addComponent(setElementsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(IBM_ep, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(IBM_iam, javax.swing.GroupLayout.Alignment.LEADING)))
+                .addContainerGap(157, Short.MAX_VALUE))
+        );
+        settingPanelLayout.setVerticalGroup(
+            settingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(settingPanelLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(settingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(setElementsTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(setElementsLabel))
+                .addGap(18, 18, 18)
+                .addGroup(settingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(setTitlesTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(setTitleLabel))
+                .addGap(18, 18, 18)
+                .addComponent(scrapePropertySetLabel)
+                .addGap(18, 18, 18)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(IBM_ep, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(IBM_iam, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton3)
+                .addContainerGap(18, Short.MAX_VALUE))
+        );
 
-        jLabel10.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jLabel10.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jTabbedPane.addTab("設定", settingPanel);
+
+        intervalTimeSlider.setMinimum(1);
+        intervalTimeSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                intervalTimeSliderStateChanged(evt);
+            }
+        });
+
+        intervalLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
+        intervalLabel.setText("インターバル");
+        intervalLabel.setToolTipText("順位を送信する間隔");
+
+        intervalTimeLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
+        intervalTimeLabel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
         buttonGroup1.add(jRadioButton1);
         jRadioButton1.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
@@ -338,81 +426,106 @@ public class InterScrape extends javax.swing.JFrame {
             }
         });
 
-        jLabel11.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jLabel11.setText("Auto:");
-        jLabel11.setToolTipText("インターバルごとに自動で送信します");
+        timerAutoLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
+        timerAutoLabel.setText("Auto:");
+        timerAutoLabel.setToolTipText("インターバルごとに自動で送信します");
 
-        jLabel5.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
-        jLabel5.setText("ランキング送信先IP Address");
+        addressLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
+        addressLabel.setText("ランキング送信先IP Address");
 
-        jTextField4.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
+        addressTextField.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+        javax.swing.GroupLayout timerPanelLayout = new javax.swing.GroupLayout(timerPanel);
+        timerPanel.setLayout(timerPanelLayout);
+        timerPanelLayout.setHorizontalGroup(
+            timerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, timerPanelLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
-                .addComponent(jLabel9)
+                .addComponent(intervalLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(intervalTimeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(44, 44, 44)
-                .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(intervalTimeSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(41, 41, 41))
-            .addGroup(jPanel4Layout.createSequentialGroup()
+            .addGroup(timerPanelLayout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                .addGroup(timerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(timerPanelLayout.createSequentialGroup()
+                        .addComponent(timerAutoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addComponent(jRadioButton1)
                         .addGap(28, 28, 28)
                         .addComponent(jRadioButton2)
                         .addGap(275, 275, 275))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(timerPanelLayout.createSequentialGroup()
+                        .addComponent(addressLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(addressTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(21, 21, 21))))
         );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+        timerPanelLayout.setVerticalGroup(
+            timerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(timerPanelLayout.createSequentialGroup()
                 .addGap(45, 45, 45)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jSlider1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(timerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(intervalTimeLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(intervalTimeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(intervalLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(timerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(timerAutoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jRadioButton1)
                     .addComponent(jRadioButton2))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(timerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(addressLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(addressTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(103, 103, 103))
         );
 
-        jTabbedPane1.addTab("タイマー", jPanel4);
+        jTabbedPane.addTab("タイマー", timerPanel);
 
-        jTextField1.setEditable(false);
-        jTextField1.setFocusable(false);
-
-        jToolBar1.setRollover(true);
-
-        jButton3.setText("getAllData()");
-        jButton3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton3.setFocusable(false);
-        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+        jTable1.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null},
+                {null},
+                {null},
+                {null},
+                {null}
+            },
+            new String [] {
+                "Mail Address(@cqpub.co.jp)"
             }
-        });
-        jToolBar1.add(jButton3);
+        ));
+        jTable1.setGridColor(new java.awt.Color(204, 204, 255));
+        jTable1.setRowHeight(30);
+        jTable1.setShowGrid(true);
+        jScrollPane2.setViewportView(jTable1);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(226, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 262, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(35, 35, 35))
+        );
+
+        jTabbedPane.addTab("Mail", jPanel1);
+
+        messageTextField.setEditable(false);
+        messageTextField.setFocusable(false);
+
+        upperToolBar.setRollover(true);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -421,10 +534,10 @@ public class InterScrape extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(19, 19, 19)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField1)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(messageTextField)
+                    .addComponent(upperToolBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 596, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 596, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 77, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -432,61 +545,72 @@ public class InterScrape extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(38, 38, 38)
-                .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(upperToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(36, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void manualButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manualButtonActionPerformed
         // TODO add your handling code here:
-        rank();
-    }//GEN-LAST:event_jButton1ActionPerformed
+        calcRank();
+    }//GEN-LAST:event_manualButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        url = sourceUrls[jComboBox1.getSelectedIndex()];
-        jLabel7.setText(jComboBox1.getSelectedItem().toString());
-        jTextField1.setText("カテゴリを" + jComboBox1.getSelectedItem() + "に設定しました");
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jSlider1StateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_jSlider1StateChanged
+    private void intervalTimeSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_intervalTimeSliderStateChanged
         // TODO add your handling code here:
-        jLabel10.setText(jSlider1.getValue() + "m");
-    }//GEN-LAST:event_jSlider1StateChanged
+        intervalTimeLabel.setText(intervalTimeSlider.getValue() + "m");
+    }//GEN-LAST:event_intervalTimeSliderStateChanged
 
     private void jRadioButton1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButton1ItemStateChanged
         // TODO add your handling code here:
-        timerOn();
+        autoLoadOn();
     }//GEN-LAST:event_jRadioButton1ItemStateChanged
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void allDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allDataButtonActionPerformed
         // TODO add your handling code here:
         getAllData();
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_allDataButtonActionPerformed
 
     private void jRadioButton2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButton2ItemStateChanged
         // TODO add your handling code here:
-        timerOff();
+        autoLoadOff();
     }//GEN-LAST:event_jRadioButton2ItemStateChanged
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void upperRankButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upperRankButtonActionPerformed
         // TODO add your handling code here:
-        if(currentPos > 0){
-            setImage(--currentPos);
+        if (currentPos > 0) {
+            setMagazineImage(--currentPos);
         }
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_upperRankButtonActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void lowerRankButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lowerRankButtonActionPerformed
         // TODO add your handling code here:
-        if(currentPos < 49){
-            setImage(++currentPos);
+        if (currentPos < 49) {
+            setMagazineImage(++currentPos);
         }
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_lowerRankButtonActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        send("test", "test");
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        putIBM();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    /**
+This method is used for setting end point and IAM of IBM cloud(clouadant).
+    */
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        IBM_EP = IBM_ep.getText();
+        IBM_IAM = IBM_iam.getText();
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -523,212 +647,409 @@ public class InterScrape extends javax.swing.JFrame {
         });
     }
 
-    private int currentPos=0;
-    private Elements imgElements=null;
-    static String url=null;
-    static String[] sourceUrls = {"https://www.amazon.co.jp/gp/bestsellers/books/13384021/ref=zg_bs_nav_b_1_b", "https://www.amazon.co.jp/gp/bestsellers/books/46423011/ref=zg_bs_nav_b_2_13384021"};
-    private String oldUrl;
-    boolean isFirstPage=true;
-    int getData(){
-        
+    private int currentPos = 0;
+    private Elements imgElements = null;
+    private static String url = null;
+    /**
+     * sourceUrls: 0:雑誌全体1ページ目，　1:雑誌全体2ページ目，　2:コンピュータ・モバイルカテゴリ
+     */
+
+    static String[] sourceUrls = {"https://www.amazon.co.jp/gp/bestsellers/books/13384021/ref=zg_bs_nav_b_1_b", "https://www.amazon.co.jp/-/en/gp/bestsellers/books/13384021/ref=zg_bs_pg_2?ie=UTF8&pg=2", "https://www.amazon.co.jp/gp/bestsellers/books/46423011/ref=https://www.amazon.co.jp/gp/bestsellers/books/46456011/ref=zg_bs_nav_b_3_46423011", "https://www.amazon.co.jp/gp/bestsellers/books/46456011/ref=zg_bs_nav_b_3_46423011"};
+    private String previousUrl;
+
+    boolean isFirstPage = true;
+
+    int scrapePage() {
+
         int number = -1;
-        if(url==null){
-            url = "https://www.amazon.co.jp/gp/bestsellers/books/46423011/ref=zg_bs_nav_b_2_13384021";
+        if (url == null) {
+            url = sourceUrls[0];
         }
-        
+
         final String USER_AGENT = "ESP32";
-        try{
-            Document doc = Jsoup.connect(url)
+        Document doc=null;
+        try {
+            doc = Jsoup.connect(url)
                     .userAgent(USER_AGENT)
                     .get();
             //System.out.println("Doc: " + doc.title());
-            
+
             //Element element = doc.body();
             Elements elements = doc.getElementsByClass("zg-badge-text");
             Elements titles = doc.getElementsByClass("p13n-sc-truncate");// p13n-sc-line-clamp-1 p13n-sc-truncate-desktop-type2
             imgElements = doc.select(".aok-inline-block img");
 //            System.out.println(doc.getElementsByClass("dg-badge-text"));
 //            System.out.println(element.getAllElements());
-            int i=0;
-            for(Element element : elements){
-                String title=null;
-                if(i < titles.size()){
+            int i = 0;
+            for (Element element : elements) {
+                String title = null;
+                if (i < titles.size()) {
                     title = titles.get(i).text();
-                    if(title.contains("インターフェース")){
-                        if(number == -1){
-                            number = i+1;
+                    if (title.contains("インターフェース")) {
+                        if (number == -1) {
+                            number = i + 1;
                         }
-                    System.out.print("####");
-                }
+                        System.out.print("####");
+                    }
                 }
                 String tx = element.text();
                 System.out.print(tx);
-                jTextArea1.append(tx);
-                
-                if(i < titles.size()){
+                logTextArea.append(tx);
+
+                if (i < titles.size()) {
                     tx = titles.get(i++).text();
                     System.out.println(":    " + tx);
-                    jTextArea1.append(tx + "\n");            
+                    logTextArea.append(tx + "\n");
                 }
             }
-            
-        }catch(IOException e){
+
+        } catch (UnknownHostException ue){
+            messageTextField.setText("UnknownHostException");
+            //doc.remove();
+            ue.printStackTrace();
+            ioFail = true;
+            return 0;
+        } catch (IOException e) {
+            messageTextField.setText("IOException");
             e.printStackTrace();
+        }        
+
+        setMagazineImage(number - 1);
+        messageTextField.setText("");
+        currentPos = number - 1;
+
+        if (number == -1) {
+            if (isFirstPage) {
+                isFirstPage = false;
+                url = sourceUrls[1];
+                number = scrapePage();
+                if (number > -1) {
+                    number += 50;
+                }
+                isFirstPage = true;
+            }
         }
-        
-        setImage(number -1);
-        jTextField1.setText("");
-        
-        currentPos = number-1;
-        
-        if(number == -1 && isFirstPage){
-            isFirstPage = false;
-            oldUrl = url;
-            url = "https://www.amazon.co.jp/gp/bestsellers/books/13384021/ref=zg_bs_pg_2?ie=UTF8&pg=2";
-            number = getData();
-            number += 50;
-            isFirstPage = true;
-            url = oldUrl;
-        }
-        
+
         return number;
     }
-    
-    void setImage(int n){
-        if(n < 0 || n > 49){
+
+    private void setMagazineImage(int n) {
+        if (n < 0 || n > 49) {
             n = 0;
         }
         String st = imgElements.get(n).toString();
         System.out.println(st);
         int startPoint = st.indexOf("src=");
         int endPoint = st.indexOf("height=");
-        String source = st.substring(startPoint+5, endPoint-2);
-        System.out.println("img src = " + source);
-        
-        URL sourceUrl=null;
-        try{
-        sourceUrl = new URL(source); 
-        }catch(MalformedURLException e){
+        String imgsrc = st.substring(startPoint + 5, endPoint - 2);
+        System.out.println("img src = " + imgsrc);
+
+        URL sourceUrl = null;
+        try {
+            sourceUrl = new URL(imgsrc);
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         ImageIcon icon = new ImageIcon(sourceUrl);
-        jLabel12.setIcon(icon);
-        jLabel12.setText(n+1 + "位");
+        magazineCoverLabel.setIcon(icon);
+        magazineCoverLabel.setText(n + 1 + "位");
     }
-    
-    public void getAllData(){
-         int number = -1;
-        if(url==null){
-            url = "https://www.amazon.co.jp/gp/bestsellers/books/46423011/ref=zg_bs_nav_b_2_13384021";
+
+    /**
+     * for test
+     */
+    public void getAllData() {
+        if (url == null) {
+            url = sourceUrls[0];
         }
-        
+
         final String USER_AGENT = "ESP32";
-        try{
+        try {
             Document doc = Jsoup.connect(url)
                     .userAgent(USER_AGENT)
                     .get();
-            
+
             Elements elements = doc.select(".aok-inline-block img");
-            for(Element element: elements){
+            for (Element element : elements) {
                 System.out.println(element.toString());
             }
             Element ele = elements.get(3);
             String st = ele.toString();
             int startPoint = st.indexOf("src=");
             int endPoint = st.indexOf("height=");
-            String source = st.substring(startPoint+4, endPoint-1);
+            String source = st.substring(startPoint + 4, endPoint - 1);
             System.out.println("img src = " + source);
             //System.out.println("Doc: " + doc.title());
-            
+
             //Element element = doc.body();
-           //  System.out.println(doc.getElementsByClass("dg-badge-text"));
+            //  System.out.println(doc.getElementsByClass("dg-badge-text"));
             //System.out.println(doc.html());
-        }catch(Exception e){
-            
+        } catch (Exception e) {
+
         }
     }
-    
+
     Timer timer;
     TimerTask timerTask;
-    
-    public void timerOn(){
+
+    public void autoLoadOn() {
         System.out.println("Timer On");
-        int interval = jSlider1.getValue();
-        jTextField1.setText("自動更新をONにしました: " + interval + "m");
-        timerTask = new TimerTask(){
-             public void run(){
-                 rank();
-             }
-         };
-         timer = new Timer();
-         timer.schedule(timerTask, 5000, interval * 1000*60);
+        int interval = intervalTimeSlider.getValue();
+        messageTextField.setText("自動更新をONにしました: " + interval + "m");
+        timerTask = new TimerTask() {
+            public void run() {
+                calcRank();
+            }
+        };
+        timer = new Timer();
+        timer.schedule(timerTask, 60000, interval * 1000 * 60);
     }
-    
-    public void timerOff(){
+
+    public void autoLoadOff() {
         System.out.println("Timer Off");
-        if(timerTask != null){
+        if (timerTask != null) {
             timerTask.cancel();
         }
         timer = null;
     }
-    
-    
-    void rank(){
-        jTextField1.setText("ランキング取得中．．．");
-        jTextField1.paintImmediately(jTextField1.getVisibleRect());
-        url = sourceUrls[0];
-        int currentRank = getData();
-        if(currentRank == -1){
-            jLabel14.setText("ランク外です");            
-        }else{
-            jLabel14.setText(currentRank + "位");
+
+    String getTimeStamp() {
+        NTPUDPClient client = new NTPUDPClient();
+        Date date = null;
+        SimpleDateFormat sdt = null;
+        try {
+            InetAddress address = InetAddress.getByName("ntp.nict.jp");
+            client.open();
+            TimeInfo ti = client.getTime(address);
+            date = new Date(ti.getReturnTime());
+            TimeZone tz = TimeZone.getTimeZone("Asia/Tokyo");
+            sdt = new SimpleDateFormat();
+            sdt.setTimeZone(tz);
+            ti.computeDetails();
+            long offset = ti.getOffset();
+            client.close();
+            System.out.println("Offset:" + offset);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "00:00:00";
         }
-        url = sourceUrls[1];
-        currentRank = getData();
-        if(currentRank == -1){
-            jLabel1.setText("ランク外です");            
-        }else{
-            jLabel1.setText(currentRank + "位");
+        return sdt.format(date);
+    }
+
+    void calcRank() {
+        messageTextField.setText("ランキング取得中．．．");
+        messageTextField.paintImmediately(messageTextField.getVisibleRect());
+        url = sourceUrls[0];
+        int currentRank = scrapePage();
+        if (currentRank == -1) {
+            lowerRankLabel.setText("ランク外です");
+        } else {
+            lowerRankLabel.setText(currentRank + "位");
+        }
+        url = sourceUrls[3];
+        currentRank = scrapePage();
+        if (currentRank == -1) {
+            upperRankLabel1.setText("ランク外です");
+        } else {
+            upperRankLabel1.setText(currentRank + "位");
+        }
+        url = sourceUrls[2];
+        currentRank = scrapePage();
+        if (currentRank == -1) {
+            upperRankLabel.setText("ランク外です");
+        } else {
+            upperRankLabel.setText(currentRank + "位");
+        }
+        messageTextField.setText("更新日時： " + getTimeStamp() + " JST");
+        if(!ioFail){
+            putIBM();
+        }
+        ioFail = false;
+    }
+
+    public void putIBM() {
+        if(IBM_IAM == null || IBM_EP ==null)return;
+        
+        CloudantClient client = null;
+        try {
+            client = ClientBuilder.url(new URL(IBM_EP))
+                    .iamApiKey(IBM_IAM)
+                    .build();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+// Show the server version
+        System.out.println("Server Version: " + client.serverVersion());
+
+// Get a List of all the databases this Cloudant account
+        List<String> databases = client.getAllDbs();
+        System.out.println("All my databases : ");
+        for (String db : databases) {
+            System.out.println(db);
+        }
+        
+// Get a Database instance to interact with, but don't create it if it doesn't already exist
+        Database db = client.database("noderedjmqpg20210624", false);
+
+// A Java type that can be serialized to JSON
+// Create an ExampleDocument and save it in the database
+        String timeStamp = "";
+        timeStamp = getTimeStamp();
+        int rank;
+        try {
+            String tmpText = lowerRankLabel.getText();
+            tmpText = tmpText.substring(0, tmpText.length()-1);
+            rank = Integer.parseInt(tmpText);
+        } catch (NumberFormatException e) {
+            if(!lowerRankLabel.getText().equals("ランク外です")){
+                e.printStackTrace();
+            }
+            rank = 0;
+        }
+        CurrentData cd = new CurrentData(timeStamp, rank);
+        db.save(cd);
+        System.out.println("You have inserted the document: " + cd);
+    }
+
+    class CurrentData {
+
+        private String _id = "timeStamp";
+        private int rank = 0;
+        // private boolean isExample;
+
+        public CurrentData(String timeStamp, int currentRank) {
+            this._id = timeStamp;
+            this.rank = currentRank;
+        }
+
+        public String toString() {
+            return "{ TimeStamp: " + _id + "Rank " + rank + "\n}";
         }
     }
 
+    public void send(String subject, String content) {
+
+        final String to = "nagai@cqpub.co.jp";
+        final String from = "interface.sugamo@gmail.com";
+
+        // Google account mail address
+        final String username = "interface.sugamo@gmail.com";
+        // Google App password
+        final String password = "";
+
+        final String charset = "ISO-2022-JP";
+        //final String charset = "UTF-8";
+
+        final String encoding = "base64";
+
+        // for gmail
+        String host = "smtp.gmail.com";
+        String port = "465";
+        String starttls = "true";
+
+        // for local
+        //String host = "localhost";
+        //String port = "2525";
+        //String starttls = "false";
+        Properties props = new Properties();
+        props.put("mail.smtp.user", username);
+        props.put("mail.smtp.password", password);
+
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.port", port);
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.ssl.enable", "true");
+        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        props.put("mail.smtp.socketFactory.fallback", "true");
+        props.put("mail.smtp.socketFactory.port", "465");
+        props.put("mail.smtp.starttls.enable", starttls);
+        props.put("mail.smtp.starttls.required", "true");
+
+        props.put("mail.smtp.connectiontimeout", "10000");
+        props.put("mail.smtp.timeout", "10000");
+
+        props.put("mail.debug", "true");
+
+        Session session = Session.getInstance(props,
+                new javax.mail.Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
+
+        try {
+            MimeMessage message = new MimeMessage(session);
+
+            // Set From:
+            message.setFrom(new InternetAddress(from, "Amazon Ranking"));
+            // Set ReplyTo:
+            message.setReplyTo(new Address[]{new InternetAddress(from)});
+            // Set To:
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+
+            message.setSubject(subject, charset);
+            message.setText(content, charset);
+
+            message.setHeader("Content-Transfer-Encoding", encoding);
+
+            Transport.send(message);
+
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean ioFail = false;
+    private String IBM_IAM=null;
+    private String IBM_EP=null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField IBM_ep;
+    private javax.swing.JTextField IBM_iam;
+    private javax.swing.JLabel addressLabel;
+    private javax.swing.JTextField addressTextField;
+    private javax.swing.JButton allDataButton;
+    private javax.swing.JPanel bookPreferencePanel;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JLabel intervalLabel;
+    private javax.swing.JLabel intervalTimeLabel;
+    private javax.swing.JSlider intervalTimeSlider;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSlider jSlider1;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JTabbedPane jTabbedPane;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JScrollPane logScrollPane;
+    private javax.swing.JTextArea logTextArea;
+    private javax.swing.JButton lowerRankButton;
+    private javax.swing.JLabel lowerRankLabel;
+    private javax.swing.JLabel magazineCoverLabel;
+    private javax.swing.JPanel mainPanel;
+    private javax.swing.JButton manualButton;
+    private javax.swing.JTextField messageTextField;
+    private javax.swing.JLabel scrapePropertySetLabel;
+    private javax.swing.JLabel setElementsLabel;
+    private javax.swing.JTextField setElementsTextField;
+    private javax.swing.JLabel setTitleLabel;
+    private javax.swing.JTextField setTitlesTextField;
+    private javax.swing.JPanel settingPanel;
+    private javax.swing.JLabel timerAutoLabel;
+    private javax.swing.JPanel timerPanel;
+    private javax.swing.JLabel titleLabel;
+    private javax.swing.JButton upperRankButton;
+    private javax.swing.JLabel upperRankLabel;
+    private javax.swing.JLabel upperRankLabel1;
+    private javax.swing.JToolBar upperToolBar;
     // End of variables declaration//GEN-END:variables
 }
