@@ -4,7 +4,7 @@
  ウェブ・スクレイピングにはjsoupを使っています．<Br>
  
 ## How to use
-AmazonScrape-1.0.jarをダウンロードしてください．<br>
+AmazonScrape-1.4.jarをダウンロードしてください．<br>
 Please download AmazonScrape-1.0.jar file<br>
 <br>
 いわゆるFat Jarになっており，ライブラリを含んでいます．<br>
