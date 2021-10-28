@@ -8,13 +8,19 @@ package com.mycompany.amazonscrape;
 import com.cloudant.client.api.ClientBuilder;
 import com.cloudant.client.api.CloudantClient;
 import com.cloudant.client.api.Database;
+import static com.cloudant.client.api.query.Expression.gt;
+import com.cloudant.client.api.query.QueryBuilder;
+import com.cloudant.client.api.query.QueryResult;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,12 +38,26 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import org.apache.commons.net.ntp.NTPUDPClient;
 import org.apache.commons.net.ntp.TimeInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.util.Iterator;
+import javax.swing.JFrame;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.time.Minute;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 
 /**
  *
@@ -50,6 +70,15 @@ public class InterScrape extends javax.swing.JFrame {
      */
     public InterScrape() {
         initComponents();
+        try {
+            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
+            //UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsClassicLookAndFeel");
+            //SwingUtilities.updateComponentTreeUI(this);
+            passwordRead();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //timer = new Timer();
     }
 
     /**
@@ -82,6 +111,7 @@ public class InterScrape extends javax.swing.JFrame {
         allDataButton = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
         settingPanel = new javax.swing.JPanel();
         setElementsTextField = new javax.swing.JTextField();
         setElementsLabel = new javax.swing.JLabel();
@@ -104,11 +134,15 @@ public class InterScrape extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        jButton4 = new javax.swing.JButton();
         messageTextField = new javax.swing.JTextField();
         upperToolBar = new javax.swing.JToolBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Interface Rank");
 
+        jTabbedPane.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
         jTabbedPane.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
         jTabbedPane.setName(""); // NOI18N
         jTabbedPane.setPreferredSize(new java.awt.Dimension(490, 242));
@@ -131,7 +165,7 @@ public class InterScrape extends javax.swing.JFrame {
         titleLabel.setFont(new java.awt.Font("MS UI Gothic", 0, 24)); // NOI18N
         titleLabel.setText("インターフェースAmazon順位");
 
-        jLabel7.setFont(new java.awt.Font("MS UI Gothic", 0, 18)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
         jLabel7.setText("コンピュータ・モバイル");
         jLabel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -159,7 +193,7 @@ public class InterScrape extends javax.swing.JFrame {
         lowerRankLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lowerRankLabel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
 
-        jLabel8.setFont(new java.awt.Font("MS UI Gothic", 0, 18)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("MS UI Gothic", 0, 14)); // NOI18N
         jLabel8.setText("OS・プログラミング");
         jLabel8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -184,38 +218,32 @@ public class InterScrape extends javax.swing.JFrame {
                 .addComponent(titleLabel)
                 .addGap(162, 162, 162))
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap(7, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(logScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(47, 47, 47))
                     .addGroup(mainPanelLayout.createSequentialGroup()
                         .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(mainPanelLayout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(mainPanelLayout.createSequentialGroup()
-                                        .addComponent(upperRankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(upperRankLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(mainPanelLayout.createSequentialGroup()
-                                        .addComponent(jLabel7)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel8))))
-                            .addGroup(mainPanelLayout.createSequentialGroup()
-                                .addGap(30, 30, 30)
-                                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(mainPanelLayout.createSequentialGroup()
-                                        .addGap(6, 6, 6)
-                                        .addComponent(upperRankButton)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(manualButton)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(lowerRankButton))
-                                    .addComponent(lowerRankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addContainerGap(17, Short.MAX_VALUE))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                                .addGap(86, 86, 86)
+                                .addComponent(manualButton)
+                                .addGap(35, 35, 35))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(mainPanelLayout.createSequentialGroup()
+                                    .addGap(6, 6, 6)
+                                    .addComponent(upperRankButton))
+                                .addComponent(lowerRankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lowerRankButton))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addComponent(upperRankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(upperRankLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel7)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel8))
+                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -228,18 +256,18 @@ public class InterScrape extends javax.swing.JFrame {
                         .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(upperRankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(upperRankLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(upperRankLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(upperRankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lowerRankLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(upperRankButton)
                             .addComponent(manualButton)
+                            .addComponent(upperRankButton)
                             .addComponent(lowerRankButton)))
                     .addComponent(logScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -281,6 +309,8 @@ public class InterScrape extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setText("Ver. 1.54");
+
         javax.swing.GroupLayout bookPreferencePanelLayout = new javax.swing.GroupLayout(bookPreferencePanel);
         bookPreferencePanel.setLayout(bookPreferencePanelLayout);
         bookPreferencePanelLayout.setHorizontalGroup(
@@ -292,7 +322,9 @@ public class InterScrape extends javax.swing.JFrame {
                 .addComponent(jButton1)
                 .addGap(37, 37, 37)
                 .addComponent(jButton2)
-                .addContainerGap(312, Short.MAX_VALUE))
+                .addGap(101, 101, 101)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(109, Short.MAX_VALUE))
             .addGroup(bookPreferencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(bookPreferencePanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -303,11 +335,16 @@ public class InterScrape extends javax.swing.JFrame {
             bookPreferencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bookPreferencePanelLayout.createSequentialGroup()
                 .addContainerGap(246, Short.MAX_VALUE)
-                .addGroup(bookPreferencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1)
-                    .addComponent(allDataButton))
-                .addContainerGap())
+                .addGroup(bookPreferencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(bookPreferencePanelLayout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bookPreferencePanelLayout.createSequentialGroup()
+                        .addGroup(bookPreferencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jButton2)
+                            .addComponent(jButton1)
+                            .addComponent(allDataButton))
+                        .addContainerGap())))
             .addGroup(bookPreferencePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, bookPreferencePanelLayout.createSequentialGroup()
                     .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -522,6 +559,32 @@ public class InterScrape extends javax.swing.JFrame {
 
         jTabbedPane.addTab("Mail", jPanel1);
 
+        jButton4.setText("getData");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(506, Short.MAX_VALUE)
+                .addComponent(jButton4)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(248, Short.MAX_VALUE)
+                .addComponent(jButton4)
+                .addContainerGap())
+        );
+
+        jTabbedPane.addTab("グラフ", jPanel2);
+
         messageTextField.setEditable(false);
         messageTextField.setFocusable(false);
 
@@ -538,7 +601,7 @@ public class InterScrape extends javax.swing.JFrame {
                     .addComponent(upperToolBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 596, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 77, Short.MAX_VALUE)))
+                        .addGap(0, 11, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -550,7 +613,7 @@ public class InterScrape extends javax.swing.JFrame {
                 .addComponent(jTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(36, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         pack();
@@ -568,7 +631,11 @@ public class InterScrape extends javax.swing.JFrame {
 
     private void jRadioButton1ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButton1ItemStateChanged
         // TODO add your handling code here:
-        autoLoadOn();
+        if (jRadioButton1.isSelected()) {
+            autoLoadOn();
+        } else {
+            autoLoadOff();
+        }
     }//GEN-LAST:event_jRadioButton1ItemStateChanged
 
     private void allDataButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allDataButtonActionPerformed
@@ -578,7 +645,7 @@ public class InterScrape extends javax.swing.JFrame {
 
     private void jRadioButton2ItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jRadioButton2ItemStateChanged
         // TODO add your handling code here:
-        autoLoadOff();
+        //autoLoadOff();
     }//GEN-LAST:event_jRadioButton2ItemStateChanged
 
     private void upperRankButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upperRankButtonActionPerformed
@@ -605,12 +672,18 @@ public class InterScrape extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
-This method is used for setting end point and IAM of IBM cloud(clouadant).
-    */
+     * This method is used for setting end point and IAM of IBM
+     * cloud(clouadant).
+     */
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         IBM_EP = IBM_ep.getText();
         IBM_IAM = IBM_iam.getText();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        getCloudantData();
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -660,26 +733,21 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
     boolean isFirstPage = true;
 
     int scrapePage() {
-
+        System.out.print(" _1 ");
         int number = -1;
         if (url == null) {
             url = sourceUrls[0];
         }
 
         final String USER_AGENT = "ESP32";
-        Document doc=null;
+        Document doc = null;
         try {
             doc = Jsoup.connect(url)
                     .userAgent(USER_AGENT)
                     .get();
-            //System.out.println("Doc: " + doc.title());
-
-            //Element element = doc.body();
             Elements elements = doc.getElementsByClass("zg-badge-text");
             Elements titles = doc.getElementsByClass("p13n-sc-truncate");// p13n-sc-line-clamp-1 p13n-sc-truncate-desktop-type2
             imgElements = doc.select(".aok-inline-block img");
-//            System.out.println(doc.getElementsByClass("dg-badge-text"));
-//            System.out.println(element.getAllElements());
             int i = 0;
             for (Element element : elements) {
                 String title = null;
@@ -693,18 +761,19 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
                     }
                 }
                 String tx = element.text();
-                System.out.print(tx);
+                //System.out.print(tx);
                 logTextArea.append(tx);
 
                 if (i < titles.size()) {
                     tx = titles.get(i++).text();
-                    System.out.println(":    " + tx);
+                    //System.out.println(":    " + tx);
                     logTextArea.append(tx + "\n");
                 }
             }
 
-        } catch (UnknownHostException ue){
+        } catch (UnknownHostException ue) {
             messageTextField.setText("UnknownHostException");
+            System.out.println("UnknownHostException");
             //doc.remove();
             ue.printStackTrace();
             ioFail = true;
@@ -712,7 +781,7 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
         } catch (IOException e) {
             messageTextField.setText("IOException");
             e.printStackTrace();
-        }        
+        }
 
         setMagazineImage(number - 1);
         messageTextField.setText("");
@@ -729,16 +798,17 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
                 isFirstPage = true;
             }
         }
-
         return number;
     }
 
     private void setMagazineImage(int n) {
         if (n < 0 || n > 49) {
             n = 0;
+            return;
         }
         String st = imgElements.get(n).toString();
-        System.out.println(st);
+        System.out.print(" _2 ");
+        //System.out.println(st);
         int startPoint = st.indexOf("src=");
         int endPoint = st.indexOf("height=");
         String imgsrc = st.substring(startPoint + 5, endPoint - 2);
@@ -779,11 +849,6 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
             int endPoint = st.indexOf("height=");
             String source = st.substring(startPoint + 4, endPoint - 1);
             System.out.println("img src = " + source);
-            //System.out.println("Doc: " + doc.title());
-
-            //Element element = doc.body();
-            //  System.out.println(doc.getElementsByClass("dg-badge-text"));
-            //System.out.println(doc.html());
         } catch (Exception e) {
 
         }
@@ -798,7 +863,16 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
         messageTextField.setText("自動更新をONにしました: " + interval + "m");
         timerTask = new TimerTask() {
             public void run() {
-                calcRank();
+                try {
+                    SwingUtilities.invokeAndWait(new invokeCalcRank());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    System.out.println("error 10");
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                    System.out.println("error 11");
+                }
+                //calcRank();
             }
         };
         timer = new Timer();
@@ -807,13 +881,16 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
 
     public void autoLoadOff() {
         System.out.println("Timer Off");
-        if (timerTask != null) {
-            timerTask.cancel();
+        messageTextField.setText("自動更新をOFFにしました: ");
+        if (timer != null) {
+            timer.cancel();
         }
+        timerTask = null;
         timer = null;
     }
 
     String getTimeStamp() {
+        System.out.print(" _3 ");
         NTPUDPClient client = new NTPUDPClient();
         Date date = null;
         SimpleDateFormat sdt = null;
@@ -828,7 +905,10 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
             ti.computeDetails();
             long offset = ti.getOffset();
             client.close();
-            System.out.println("Offset:" + offset);
+            //System.out.println("Time Offset:" + offset);
+        } catch (UnknownHostException ue) {
+            ue.printStackTrace();
+            ioFail = true;
         } catch (Exception e) {
             e.printStackTrace();
             return "00:00:00";
@@ -836,40 +916,71 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
         return sdt.format(date);
     }
 
-    void calcRank() {
+    class invokeCalcRank extends Thread {
+
+        public void run() {
+            calcRank();
+        }
+    }
+
+    synchronized void calcRank() {
+        System.out.print(" _0 ");
         messageTextField.setText("ランキング取得中．．．");
         messageTextField.paintImmediately(messageTextField.getVisibleRect());
         url = sourceUrls[0];
-        int currentRank = scrapePage();
-        if (currentRank == -1) {
+        int currentRank1 = scrapePage();
+        if (currentRank1 == -1) {
             lowerRankLabel.setText("ランク外です");
         } else {
-            lowerRankLabel.setText(currentRank + "位");
+            lowerRankLabel.setText(currentRank1 + "位");
         }
+
         url = sourceUrls[3];
-        currentRank = scrapePage();
-        if (currentRank == -1) {
+        int currentRank2 = scrapePage();
+        if (currentRank2 == -1) {
             upperRankLabel1.setText("ランク外です");
+        } else if (currentRank2 == 0) {
+            upperRankLabel1.setText("- 位");
         } else {
-            upperRankLabel1.setText(currentRank + "位");
+            upperRankLabel1.setText(currentRank2 + "位");
         }
+
         url = sourceUrls[2];
-        currentRank = scrapePage();
-        if (currentRank == -1) {
+        int currentRank3 = scrapePage();
+        if (currentRank3 == -1) {
             upperRankLabel.setText("ランク外です");
+        } else if (currentRank3 == 0) {
+            upperRankLabel.setText("- 位");
         } else {
-            upperRankLabel.setText(currentRank + "位");
+            upperRankLabel.setText(currentRank3 + "位");
         }
-        messageTextField.setText("更新日時： " + getTimeStamp() + " JST");
-        if(!ioFail){
+
+        if (!ioFail) {
+            String currentTimeStamp = getTimeStamp();
+            System.out.print("time stamp: " + currentTimeStamp + " ");
+            messageTextField.setText("更新日時： " + currentTimeStamp + " JST");
+
             putIBM();
+        } else {
+            messageTextField.setText("データの取得に失敗しました");
+            System.out.println("calling autoLoadOff()");
+            new Thread() {
+                public void run() {
+                    autoLoadOff();
+                    System.out.println("calling autoLoadOn()");
+                    autoLoadOn();
+                }
+            }.run();
         }
         ioFail = false;
     }
 
     public void putIBM() {
-        if(IBM_IAM == null || IBM_EP ==null)return;
-        
+        if (IBM_IAM == null || IBM_EP == null) {
+            return;
+        }
+        System.out.println("putIBM");
+
         CloudantClient client = null;
         try {
             client = ClientBuilder.url(new URL(IBM_EP))
@@ -882,26 +993,25 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
         System.out.println("Server Version: " + client.serverVersion());
 
 // Get a List of all the databases this Cloudant account
+/*
         List<String> databases = client.getAllDbs();
         System.out.println("All my databases : ");
         for (String db : databases) {
             System.out.println(db);
         }
-        
+         */
 // Get a Database instance to interact with, but don't create it if it doesn't already exist
         Database db = client.database("noderedjmqpg20210624", false);
 
-// A Java type that can be serialized to JSON
-// Create an ExampleDocument and save it in the database
         String timeStamp = "";
         timeStamp = getTimeStamp();
         int rank;
         try {
             String tmpText = lowerRankLabel.getText();
-            tmpText = tmpText.substring(0, tmpText.length()-1);
+            tmpText = tmpText.substring(0, tmpText.length() - 1);
             rank = Integer.parseInt(tmpText);
         } catch (NumberFormatException e) {
-            if(!lowerRankLabel.getText().equals("ランク外です")){
+            if (!lowerRankLabel.getText().equals("ランク外です")) {
                 e.printStackTrace();
             }
             rank = 0;
@@ -911,29 +1021,136 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
         System.out.println("You have inserted the document: " + cd);
     }
 
+    List<CurrentData> database;
+
+    void getCloudantData() {
+        if (IBM_IAM == null || IBM_EP == null) {
+            return;
+        }
+        System.out.println("getIBM");
+
+        CloudantClient client = null;
+
+        try {
+            client = ClientBuilder.url(new URL(IBM_EP))
+                    .iamApiKey(IBM_IAM)
+                    .build();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+// Show the server version
+        //System.out.println("Server Version: " + client.serverVersion());
+
+// Get a Database instance to interact with, but don't create it if it doesn't already exist
+        Database db = client.database("noderedjmqpg20210624", false);
+        QueryResult<CurrentData> result = null;
+        result = db.query(new QueryBuilder(gt("rank", 0)).build(), CurrentData.class);
+        database = result.getDocs();
+        
+        createGraph();
+    }
+//* to use IBM Cloudant as data structure
+
     class CurrentData {
 
         private String _id = "timeStamp";
-        private int rank = 0;
+        int rank = 0;
+        int year;
+        int month;
+        int day;
+        int hour;
+        int minute;
         // private boolean isExample;
 
         public CurrentData(String timeStamp, int currentRank) {
             this._id = timeStamp;
             this.rank = currentRank;
         }
-
+        
+        void parse(){
+            try{
+                day = Integer.parseInt(_id.substring(0, 2));
+                month = Integer.parseInt(_id.substring(3, 5));
+                year = Integer.parseInt(_id.substring(6, 10));
+                hour = Integer.parseInt(_id.substring(12, 14));
+                minute = Integer.parseInt(_id.substring(15));
+            }catch(NumberFormatException e){
+                e.printStackTrace();
+            }
+            
+        }
+        
+        
         public String toString() {
             return "{ TimeStamp: " + _id + "Rank " + rank + "\n}";
         }
     }
 
+    public void passwordRead() {
+        BufferedReader br = null;
+        try {
+            File file = new File("amazonscraper.txt");
+            br = new BufferedReader(new FileReader(file));
+
+            String str = br.readLine();
+            if (str != null) {
+                IBM_EP = str;
+            }
+
+            str = br.readLine();
+            if (str != null) {
+                IBM_IAM = str;
+            }
+            br.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("password File is not Found");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void createGraph() {
+        if (database == null) {
+            return;
+        }
+
+        TimeSeriesCollection data = new TimeSeriesCollection();
+        TimeSeries line = new TimeSeries("a");
+        for (Iterator<CurrentData> i = database.iterator(); i.hasNext();) {
+            CurrentData cd = i.next();
+            cd.parse();
+            line.add(new Minute(cd.minute, cd.hour, cd.day, cd.month, cd.year), cd.rank);
+            System.out.println(cd.rank);
+            
+        }
+        data.addSeries(line);
+        
+        
+        JFreeChart chart
+                = ChartFactory.createTimeSeriesChart("Ranking",
+                        "時間",
+                        "順位",
+                        data,
+                        false,
+                        false,
+                        false);
+
+        ChartPanel cpanel = new ChartPanel(chart);
+        ChartFrame frame = new ChartFrame("Title", chart);
+    frame.setBounds(10, 10, 400, 300);
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    frame.setVisible(true);
+        //jPanel2.add(cpanel);
+        //getContentPane().add(cpanel, BorderLayout.CENTER);
+    }
+
     public void send(String subject, String content) {
 
-        final String to = "nagai@cqpub.co.jp";
-        final String from = "interface.sugamo@gmail.com";
+        final String to = "";  //送り先アドレス
+        final String from = "";  //送信元アドレス
 
         // Google account mail address
-        final String username = "interface.sugamo@gmail.com";
+        final String username = "";
         // Google App password
         final String password = "";
 
@@ -1003,8 +1220,8 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
     }
 
     private boolean ioFail = false;
-    private String IBM_IAM=null;
-    private String IBM_EP=null;
+    private String IBM_IAM = null;
+    private String IBM_EP = null;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField IBM_ep;
     private javax.swing.JTextField IBM_iam;
@@ -1019,10 +1236,13 @@ This method is used for setting end point and IAM of IBM cloud(clouadant).
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
